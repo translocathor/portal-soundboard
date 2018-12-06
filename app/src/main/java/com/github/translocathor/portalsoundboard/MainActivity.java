@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,6 +23,10 @@ import android.view.MenuItem;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.github.translocathor.portalsoundboard.model.Sound;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.apache.commons.text.similarity.LevenshteinResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,20 +64,28 @@ public class MainActivity extends AppCompatActivity
 //        toggle.syncState();
 
 
-        FloatingSearchView floatingSearchView = findViewById(R.id.floating_search_view);
+        floatingSearchView = findViewById(R.id.floating_search_view);
         floatingSearchView.attachNavigationDrawerToMenuButton(drawer);
-        floatingSearchView.setDimBackground(false);
+        floatingSearchView.setDimBackground(true);
+        floatingSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                int id = item.getItemId();
+
+                //noinspection SimplifiableIfStatement
+                if (id == R.id.action_search_voice) {
+
+                    Log.d(TAG, "action_search_voice");
+                    startVoiceRecognition();
+
+                }
+            }
+        });
         floatingSearchView.setOnQueryChangeListener((oldQuery, newQuery) -> {
 
             Log.d(TAG, "Searching for " + newQuery);
 
-            sounds.clear();
-            for (Sound sound : allSounds) {
-                if (sound.getName().contains(newQuery)) {
-                    sounds.add(sound);
-                }
-            }
-            mAdapter.notifyDataSetChanged();
+            filterForText(newQuery);
             //get suggestions based on newQuery
 
             //pass them on to the search view
@@ -108,6 +121,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    private void filterForText(String newQuery) {
+        sounds.clear();
+        for (Sound sound : allSounds) {
+
+            if (StringUtils.containsIgnoreCase(sound.getName(), newQuery)) {
+                sounds.add(sound);
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -133,11 +157,43 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search_voice) {
+
+            Log.d(TAG, "action_search_voice");
+
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    final int VOICE_SEARCH_CODE = 3012;
+
+    public void startVoiceRecognition() {
+        Intent intent = new Intent("android.speech.action.RECOGNIZE_SPEECH");
+        intent.putExtra("android.speech.extra.LANGUAGE_MODEL", "free_form");
+        intent.putExtra("android.speech.extra.PROMPT", "Sepeak Now");
+        this.startActivityForResult(intent, VOICE_SEARCH_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == VOICE_SEARCH_CODE && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra("android.speech.extra.RESULTS");
+            String text = matches.get(0);
+            floatingSearchView.setSearchText(text);
+            filterForText(text);
+
+            // Play first hit
+            if (!sounds.isEmpty()) {
+                Sound sound = sounds.get(0);
+                MediaPlayer mediaPlayer = MediaPlayer.create(this, sound.getResourceId());
+                mediaPlayer.start(); // no need to call prepare(); create() does that for you
+            }
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
