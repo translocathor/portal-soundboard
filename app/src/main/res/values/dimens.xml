@@ -8,4 +8,5 @@
 
     <!-- Sound item -->
     <dimen name="sound_item_height">50dp</dimen>
+    <dimen name="toolbar_height">80dp</dimen>
 </resources>

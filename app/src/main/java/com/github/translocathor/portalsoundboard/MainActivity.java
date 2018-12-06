@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.github.translocathor.portalsoundboard.model.Sound;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private List<Sound> allSounds;
     private List<Sound> sounds;
     private FloatingSearchView floatingSearchView;
 
@@ -59,6 +61,23 @@ public class MainActivity extends AppCompatActivity
 
         FloatingSearchView floatingSearchView = findViewById(R.id.floating_search_view);
         floatingSearchView.attachNavigationDrawerToMenuButton(drawer);
+        floatingSearchView.setDimBackground(false);
+        floatingSearchView.setOnQueryChangeListener((oldQuery, newQuery) -> {
+
+            Log.d(TAG, "Searching for " + newQuery);
+
+            sounds.clear();
+            for (Sound sound : allSounds) {
+                if (sound.getName().contains(newQuery)) {
+                    sounds.add(sound);
+                }
+            }
+            mAdapter.notifyDataSetChanged();
+            //get suggestions based on newQuery
+
+            //pass them on to the search view
+//                mSearchView.swapSuggestions(newSuggestions);
+        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -75,6 +94,7 @@ public class MainActivity extends AppCompatActivity
 
         // specify an adapter (see also next example)
         sounds = new SoundProvider().getSounds();
+        allSounds = new ArrayList<>(sounds);
         mAdapter = new SoundsAdapter(sounds);
         ((SoundsAdapter) mAdapter).setItemClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
