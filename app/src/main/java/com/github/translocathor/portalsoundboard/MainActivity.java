@@ -1,5 +1,6 @@
 package com.github.translocathor.portalsoundboard;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,11 +16,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.github.translocathor.portalsoundboard.model.Sound;
+
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SoundsAdapter.ItemClickListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private List<Sound> sounds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +64,9 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new SoundsAdapter(new String[]{"Test1", "Test2"});
+        sounds = new SoundProvider().getSounds();
+        mAdapter = new SoundsAdapter(sounds);
+        ((SoundsAdapter) mAdapter).setItemClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -115,5 +125,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View view, int position) {
+        Sound sound = sounds.get(position);
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, sound.getResourceId());
+        mediaPlayer.start(); // no need to call prepare(); create() does that for you
     }
 }
