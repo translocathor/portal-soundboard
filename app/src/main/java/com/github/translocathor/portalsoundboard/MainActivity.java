@@ -1,16 +1,22 @@
 package com.github.translocathor.portalsoundboard;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -30,6 +37,20 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SoundsAdapter.ItemClickListener, FloatingSearchView.OnMenuItemClickListener {
+
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
+     * sections. We use a {@link FragmentPagerAdapter} derivative, which will keep every loaded
+     * fragment in memory. If this becomes too memory intensive, it may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -42,8 +63,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -86,22 +105,36 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.sounds_recycler_view);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // specify an adapter (see also next example)
-        sounds = new SoundProvider().getSounds();
-        allSounds = new ArrayList<>(sounds);
-        mAdapter = new SoundsAdapter(sounds);
-        ((SoundsAdapter) mAdapter).setItemClickListener(this);
-        mRecyclerView.setAdapter(mAdapter);
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+//        mRecyclerView = (RecyclerView) findViewById(R.id.sounds_recycler_view);
+//
+//        // use this setting to improve performance if you know that changes
+//        // in content do not change the layout size of the RecyclerView
+//        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+//        // use a linear layout manager
+//        mLayoutManager = new LinearLayoutManager(this);
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+//
+//        // specify an adapter (see also next example)
+//        sounds = new SoundProvider().getSounds();
+//        allSounds = new ArrayList<>(sounds);
+//        mAdapter = new SoundsAdapter(sounds);
+//        ((SoundsAdapter) mAdapter).setItemClickListener(this);
+//        mRecyclerView.setAdapter(mAdapter);
 
         // Get the intent, verify the action and get the query
         Intent intent = getIntent();
@@ -228,6 +261,105 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "action_search_voice");
             startVoiceRecognition();
 
+        }
+    }
+
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class SoundListFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+        private RecyclerView mRecyclerView;
+        private RecyclerView.Adapter mAdapter;
+        private RecyclerView.LayoutManager mLayoutManager;
+        private List<Sound> allSounds;
+        private List<Sound> sounds;
+
+        public SoundListFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section number.
+         */
+        public static SoundListFragment newInstance(int sectionNumber) {
+            SoundListFragment fragment = new SoundListFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.content_main, container, false);
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            mRecyclerView = rootView.findViewById(R.id.sounds_recycler_view);
+
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+            // use a linear layout manager
+            mLayoutManager = new LinearLayoutManager(getContext());
+            mRecyclerView.setLayoutManager(mLayoutManager);
+
+            // specify an adapter (see also next example)
+            sounds = new SoundProvider().getSounds();
+            allSounds = new ArrayList<>(sounds);
+            mAdapter = new SoundsAdapter(sounds);
+            ((SoundsAdapter) mAdapter).setItemClickListener(new SoundsAdapter.ItemClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    Sound sound = sounds.get(position);
+                    MediaPlayer mediaPlayer = MediaPlayer.create(getContext(), sound.getResourceId());
+                    mediaPlayer.start(); // no need to call prepare(); create() does that for you
+                }
+            });
+            mRecyclerView.setAdapter(mAdapter);
+
+
+            return rootView;
+        }
+
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the
+     * sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a SoundListFragment (defined as a static inner class below).
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+                    return SoundListFragment.newInstance(0);
+                case 1: // Fragment # 0 - This will show FirstFragment different title
+                    return SoundListFragment.newInstance(1);
+                case 2: // Fragment # 1 - This will show SecondFragment
+                    return SoundListFragment.newInstance(2);
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
         }
     }
 }
