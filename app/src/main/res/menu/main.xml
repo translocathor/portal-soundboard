@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_search_voice"
         android:orderInCategory="100"
-        android:icon="@drawable/baseline_mic_black_24"
+        android:icon="@drawable/ic_baseline_mic_none"
         android:title="@string/action_settings"
         app:showAsAction="always" />
 </menu>

@@ -4,7 +4,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
+import android.os.Parcel;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DividerItemDecoration;
@@ -15,24 +15,21 @@ import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.github.translocathor.portalsoundboard.model.Sound;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.apache.commons.text.similarity.LevenshteinResults;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SoundsAdapter.ItemClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SoundsAdapter.ItemClickListener, FloatingSearchView.OnMenuItemClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -52,8 +49,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                floatingSearchView.setSearchFocused(true);
             }
         });
 
@@ -67,29 +64,23 @@ public class MainActivity extends AppCompatActivity
         floatingSearchView = findViewById(R.id.floating_search_view);
         floatingSearchView.attachNavigationDrawerToMenuButton(drawer);
         floatingSearchView.setDimBackground(true);
-        floatingSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+        floatingSearchView.setOnMenuItemClickListener(this);
+        floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
-            public void onActionMenuItemSelected(MenuItem item) {
-                int id = item.getItemId();
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+            }
 
-                //noinspection SimplifiableIfStatement
-                if (id == R.id.action_search_voice) {
-
-                    Log.d(TAG, "action_search_voice");
-                    startVoiceRecognition();
-
-                }
+            @Override
+            public void onSearchAction(String currentQuery) {
+                searchFor(currentQuery);
             }
         });
-        floatingSearchView.setOnQueryChangeListener((oldQuery, newQuery) -> {
-
-            Log.d(TAG, "Searching for " + newQuery);
-
-            filterForText(newQuery);
-            //get suggestions based on newQuery
-
-            //pass them on to the search view
-//                mSearchView.swapSuggestions(newSuggestions);
+        floatingSearchView.setOnClearSearchActionListener(new FloatingSearchView.OnClearSearchActionListener() {
+            @Override
+            public void onClearSearchClicked() {
+                sounds.clear();
+                sounds.addAll(allSounds);
+            }
         });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -118,10 +109,9 @@ public class MainActivity extends AppCompatActivity
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.d(TAG, "Search: " + query);
         }
-
     }
 
-    private void filterForText(String newQuery) {
+    private void searchFor(String newQuery) {
         sounds.clear();
         for (Sound sound : allSounds) {
 
@@ -183,7 +173,7 @@ public class MainActivity extends AppCompatActivity
             ArrayList<String> matches = data.getStringArrayListExtra("android.speech.extra.RESULTS");
             String text = matches.get(0);
             floatingSearchView.setSearchText(text);
-            filterForText(text);
+            searchFor(text);
 
             // Play first hit
             if (!sounds.isEmpty()) {
@@ -226,5 +216,18 @@ public class MainActivity extends AppCompatActivity
         Sound sound = sounds.get(position);
         MediaPlayer mediaPlayer = MediaPlayer.create(this, sound.getResourceId());
         mediaPlayer.start(); // no need to call prepare(); create() does that for you
+    }
+
+    @Override
+    public void onActionMenuItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_search_voice) {
+
+            Log.d(TAG, "action_search_voice");
+            startVoiceRecognition();
+
+        }
     }
 }
