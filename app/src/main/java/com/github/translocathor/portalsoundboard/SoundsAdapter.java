@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.translocathor.portalsoundboard.model.Sound;
@@ -21,7 +22,7 @@ public class SoundsAdapter extends RecyclerView.Adapter<SoundsAdapter.MyViewHold
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         public TextView soundTextView;
-        public Button soundButton;
+        public ImageButton soundButton;
         private ItemClickListener itemClickListener;
 
         public MyViewHolder(View v, ItemClickListener itemClickListener) {
