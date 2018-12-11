@@ -12,8 +12,41 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="75dp">
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:background="@color/colorPrimary"
+                app:layout_scrollFlags="enterAlways" />
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_scrollFlags="scroll|enterAlways" >
+
+                <android.support.design.widget.TabItem
+                    android:id="@+id/tabItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tab 1" />
+
+                <android.support.design.widget.TabItem
+                    android:id="@+id/tabItem2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tab 2" />
+
+                <android.support.design.widget.TabItem
+                    android:id="@+id/tabItem3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tab 3" />
+
+            </android.support.design.widget.TabLayout>
 
         </android.support.design.widget.AppBarLayout>
 
@@ -33,14 +66,14 @@
         android:id="@+id/floating_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:floatingSearch_menu="@menu/main"
         app:floatingSearch_close_search_on_keyboard_dismiss="true"
-        app:floatingSearch_showVoiceInput="true"
         app:floatingSearch_leftActionMode="showHamburger"
+        app:floatingSearch_menu="@menu/main"
         app:floatingSearch_searchBarMarginLeft="5dp"
         app:floatingSearch_searchBarMarginRight="5dp"
         app:floatingSearch_searchBarMarginTop="5dp"
         app:floatingSearch_searchHint="@string/sound_search_hint"
         app:floatingSearch_showSearchKey="true"
+        app:floatingSearch_showVoiceInput="true"
         app:floatingSearch_suggestionsListAnimDuration="250" />
 </FrameLayout>
