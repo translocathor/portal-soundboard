@@ -1,6 +1,5 @@
 package com.github.translocathor.portalsoundboard;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -14,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +26,7 @@ import android.view.ViewGroup;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.github.translocathor.portalsoundboard.loader.SoundProvider;
 import com.github.translocathor.portalsoundboard.model.Sound;
 
 import org.apache.commons.lang3.StringUtils;
