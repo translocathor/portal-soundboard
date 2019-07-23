@@ -1,4 +1,4 @@
-package com.github.translocathor
+package com.github.translocathor.portalsoundboard
 
 import org.junit.Test
 

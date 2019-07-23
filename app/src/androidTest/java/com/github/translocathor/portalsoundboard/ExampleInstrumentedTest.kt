@@ -1,4 +1,4 @@
-package com.github.translocathor
+package com.github.translocathor.portalsoundboard
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

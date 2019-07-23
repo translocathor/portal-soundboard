@@ -1,4 +1,4 @@
-package com.github.translocathor
+package com.github.translocathor.portalsoundboard
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.translocathor.R
 
 class MainActivity : AppCompatActivity() {
 

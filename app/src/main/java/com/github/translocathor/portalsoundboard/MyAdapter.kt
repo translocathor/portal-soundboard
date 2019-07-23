@@ -1,9 +1,10 @@
-package com.github.translocathor
+package com.github.translocathor.portalsoundboard
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.github.translocathor.R
 
 class MyAdapter(private val myDataset: Array<String>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
@@ -19,7 +20,7 @@ class MyAdapter(private val myDataset: Array<String>) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): MyAdapter.MyViewHolder {
+    ): MyViewHolder {
         // create a new view
         val textView = LayoutInflater.from(parent.context)
             .inflate(R.layout.my_text_view, parent, false) as TextView
