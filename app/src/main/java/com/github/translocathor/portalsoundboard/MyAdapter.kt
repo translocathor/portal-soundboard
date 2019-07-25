@@ -21,7 +21,7 @@ class MyAdapter(private val myDataset: List<Sound>, private val itemClickListene
 
         init {
             v.setOnClickListener(this)
-            soundTextView = v.findViewById(com.github.translocathor.R.id.text)
+            soundTextView = v.findViewById(com.github.translocathor.R.id.sound_item_title)
         }
 
         override fun onClick(v: View) {

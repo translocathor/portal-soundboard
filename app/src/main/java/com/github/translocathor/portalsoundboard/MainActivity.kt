@@ -15,9 +15,17 @@ import com.github.translocathor.portalsoundboard.model.Sound
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        /**
+         * Logging tag of this class.
+         */
+        private val TAG = MainActivity::class.java.simpleName
+    }
+
+    /**
+     * List of all sounds that are currently shown in the recycler view.
+     */
     private var sounds: List<Sound> = ArrayList()
-    private val TAG = MainActivity::class.java.simpleName
-    private lateinit var textMessage: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
 
@@ -25,15 +33,12 @@ class MainActivity : AppCompatActivity() {
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                textMessage.setText(R.string.title_home)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_dashboard -> {
-                textMessage.setText(R.string.title_dashboard)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_notifications -> {
-                textMessage.setText(R.string.title_notifications)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -43,9 +48,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
-        textMessage = findViewById(R.id.message)
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         viewManager = LinearLayoutManager(this)
