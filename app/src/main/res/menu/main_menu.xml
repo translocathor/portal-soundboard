@@ -7,4 +7,10 @@
         android:title="@string/search_hint"
         app:iconTint="@android:color/white"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_language"
+        android:icon="@drawable/tmp_ic_language"
+        android:title="@string/menu_language"
+        app:iconTint="@android:color/white"
+        app:showAsAction="ifRoom" />
 </menu>
