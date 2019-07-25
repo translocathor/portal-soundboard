@@ -11,7 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.translocathor.R
 import com.github.translocathor.portalsoundboard.loader.SoundProviderTest
 import android.media.MediaPlayer
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import com.ferfalk.simplesearchview.SimpleSearchView
 import com.github.translocathor.portalsoundboard.model.Sound
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +32,7 @@ class MainActivity : AppCompatActivity() {
      */
     private var sounds: List<Sound> = ArrayList()
     private lateinit var recyclerView: RecyclerView
+    private lateinit var simpleSearchView: SimpleSearchView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
 
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -83,5 +89,16 @@ class MainActivity : AppCompatActivity() {
             adapter = viewAdapter
 
         }
+
+        simpleSearchView = findViewById(R.id.searchView)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+
+        val item: MenuItem = menu!!.findItem(R.id.action_search)
+        searchView.setMenuItem(item)
+        return true
     }
 }
