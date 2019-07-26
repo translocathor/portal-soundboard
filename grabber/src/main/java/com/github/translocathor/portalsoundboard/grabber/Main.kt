@@ -1,17 +1,11 @@
 package com.github.translocathor.portalsoundboard.grabber
 
 import freemarker.template.Configuration
-import freemarker.template.Template
 import freemarker.template.TemplateException
 import org.apache.commons.io.FilenameUtils
-import org.jsoup.Connection
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
-
 import java.io.*
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 class Main {
 
@@ -56,11 +50,10 @@ class Main {
         val data = HashMap<String, Any>()
         data["packageName"] = "com.github.translocathor.portalsoundboard.loader"
         data["imports"] = arrayOf(
-            "com.github.translocathor.portalsoundboard.R",
+            "com.github.translocathor.R",
             "com.github.translocathor.portalsoundboard.model.Category",
             "com.github.translocathor.portalsoundboard.model.Sound",
-            "java.util.ArrayList",
-            "java.util.List"
+            "java.util.ArrayList"
         )
         data["classname"] = className
 
@@ -70,7 +63,7 @@ class Main {
         // Write processed data to the provided writer
         val writer = StringWriter()
         val fileWriter =
-            FileWriter(System.getProperty("user.dir") + "\\app\\src\\main\\java\\com\\github\\translocathor\\portalsoundboard\\loader\\" + className + ".java")
+            FileWriter(System.getProperty("user.dir") + "\\app\\src\\main\\java\\com\\github\\translocathor\\portalsoundboard\\loader\\" + className + ".kt")
         template.process(data, fileWriter)
         writer.flush()
         val result = writer.buffer.toString()

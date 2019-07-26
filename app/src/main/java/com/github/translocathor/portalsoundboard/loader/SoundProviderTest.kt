@@ -5,9 +5,10 @@ import com.github.translocathor.portalsoundboard.model.Category
 import com.github.translocathor.portalsoundboard.model.Sound
 import java.util.ArrayList
 
-
+/**
+ * Provides a list of categories that each contains a set of sounds.
+ */
 class SoundProviderTest : ICategoriesLoader {
-
     override fun loadCategories(): List<Category> {
         val categories = ArrayList<Category>()
 
