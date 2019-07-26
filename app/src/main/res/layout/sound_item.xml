@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="65dp"
     android:layout_centerVertical="true"
     android:orientation="vertical"
     android:padding="10dp">
@@ -13,27 +13,19 @@
         android:layout_height="match_parent"
         android:layout_marginEnd="10dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/aperture_placeholder" />
+        android:src="@drawable/aperture_placeholder"
+        android:tint="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/sound_item_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignTop="@+id/sound_item_image"
-        android:layout_marginTop="0dp"
+        android:layout_alignBottom="@+id/sound_item_image"
         android:layout_toEndOf="@+id/sound_item_image"
         android:text="Hello World!"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:fontFamily="sans-serif" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/sound_item_title"
-        android:layout_alignBottom="@+id/sound_item_image"
-        android:layout_toEndOf="@+id/sound_item_image"
-        android:text="TextView" />
+        app:fontFamily="sans-serif-thin" />
 
 </RelativeLayout>
