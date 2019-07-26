@@ -5,11 +5,12 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/search_hint"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:iconTint="@android:color/white"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom|collapseActionView" />
     <item
         android:id="@+id/action_language"
-        android:icon="@drawable/tmp_ic_language"
+        android:icon="@drawable/baseline_language_white_24"
         android:title="@string/menu_language"
         app:iconTint="@android:color/white"
         app:showAsAction="ifRoom" />

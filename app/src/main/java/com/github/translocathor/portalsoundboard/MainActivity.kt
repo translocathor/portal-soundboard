@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.translocathor.R
@@ -14,9 +13,9 @@ import android.media.MediaPlayer
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import com.ferfalk.simplesearchview.SimpleSearchView
+import android.view.inputmethod.EditorInfo
+import androidx.appcompat.widget.SearchView
 import com.github.translocathor.portalsoundboard.model.Sound
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,10 +29,9 @@ class MainActivity : AppCompatActivity() {
     /**
      * List of all sounds that are currently shown in the recycler view.
      */
-    private var sounds: List<Sound> = ArrayList()
     private lateinit var recyclerView: RecyclerView
-    private lateinit var simpleSearchView: SimpleSearchView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    //private lateinit var simpleSearchView: SimpleSearchView
+    private lateinit var viewAdapter: MyAdapter
 
     private lateinit var viewManager: RecyclerView.LayoutManager
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -60,21 +58,20 @@ class MainActivity : AppCompatActivity() {
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         viewManager = LinearLayoutManager(this)
-        val soundProviderTest: SoundProviderTest = SoundProviderTest()
+        val soundProviderTest = SoundProviderTest()
 
-        val itemClickListener = object : MyAdapter.ItemClickListener {
-            override fun onClick(view: View, position: Int) {
+        val itemClickListener = object : MyAdapter.SoundViewHolderClickListener {
+            override fun onClick(view: View, sound: Sound) {
                 Log.d(TAG, "Clicked")
-                val sound = sounds[position]
                 val mediaPlayer = MediaPlayer.create(this@MainActivity, sound.resourceId)
                 mediaPlayer.start() // no need to call prepare(); create() does that for you
             }
         }
 
-        sounds = soundProviderTest.loadCategories().get(0).sounds
+        val sounds = soundProviderTest.loadCategories().get(0).sounds
 
         viewAdapter = MyAdapter(
-            sounds, itemClickListener
+            sounds.toMutableList(), itemClickListener
         )
 
         recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply {
@@ -90,7 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        simpleSearchView = findViewById(R.id.searchView)
+        //simpleSearchView = findViewById(R.id.searchView)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -98,7 +95,39 @@ class MainActivity : AppCompatActivity() {
         inflater.inflate(R.menu.main_menu, menu)
 
         val item: MenuItem = menu!!.findItem(R.id.action_search)
-        searchView.setMenuItem(item)
+        val searchView = item.actionView as SearchView
+        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d(TAG, "onQueryTextChange $newText")
+                viewAdapter.filter.filter(newText)
+                return false
+            }
+
+        })
         return true
     }
+
+    override fun onBackPressed() {
+//        if (searchView.onBackPressed()) {
+//            return
+//        }
+        super.onBackPressed()
+    }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if (searchView.onActivityResult(requestCode, resultCode, data)) {
+//            Log.d(TAG, "Result: $data")
+//            return
+//        }
+//
+//        super.onActivityResult(requestCode, resultCode, data)
+//    }
+
+
 }
